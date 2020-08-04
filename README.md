@@ -4,3 +4,9 @@
 ```bash
 go get github.com/kamva/arranger
 ```
+
+
+#### TODO
+- [ ] Provide OpenTracing through context propagation.
+- [ ] Write tests.
+- [ ] Write ci.
