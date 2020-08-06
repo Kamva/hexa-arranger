@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func registerWorkflow(worker worker.Worker) {
+func registerWorkflowsAndActivities(worker worker.Worker) {
 	worker.RegisterWorkflow(HelloWorldWorkflow)
 	worker.RegisterActivity(printHelloActivity)
 }
 
 // HelloWorldWorkflow is helloWorld workflow.
-func HelloWorldWorkflow(ctx workflow.Context, name string) error {
+func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
@@ -28,11 +28,11 @@ func HelloWorldWorkflow(ctx workflow.Context, name string) error {
 	f := workflow.ExecuteActivity(ctx, printHelloActivity, name)
 	if err := f.Get(ctx, &result); err != nil {
 		logger.Error("Error in execution of hello world activity", zap.Error(err))
-		return err
+		return "", err
 	}
 
 	logger.Info("helloworld workflow completed :)")
-	return nil
+	return result, nil
 }
 
 // printHelloActivity is the activity to print hello message.

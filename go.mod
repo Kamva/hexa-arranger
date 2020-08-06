@@ -1,12 +1,14 @@
-module github.com/kamva/arranger
+module github.com/kamva/hexa-arranger
 
 go 1.14
 
 require (
 	github.com/golang/protobuf v1.4.2 // indirect
-	github.com/kamva/hexa v0.0.0-20200802195555-bef52a2e7393 // indirect
-	github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655 // indirect
+	github.com/kamva/gutil v0.0.0-20200802192905-f876666b3671
+	github.com/kamva/hexa v0.0.0-20200802195555-bef52a2e7393
+	github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/pborman/uuid v0.0.0-20160209185913-a97ce2ca70fa
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v0.9.3 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect

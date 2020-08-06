@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/kamva/gutil"
-	"github.com/kamva/hexa"
 	"github.com/kamva/hexa-arranger"
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
@@ -25,7 +23,11 @@ const (
 	taskListName = "arranger-helloworld-tasklist"
 )
 
-func boot() (*zap.Logger, arranger.Arranger) {
+func main() {
+	var mode string
+	flag.StringVar(&mode, "m", "trigger", "Mode can be worker to start worker or trigger to rigger workflow")
+	flag.Parse()
+
 	cfg := zap.NewDevelopmentConfig()
 	cfg.Level.SetLevel(zapcore.InfoLevel)
 
@@ -45,30 +47,19 @@ func boot() (*zap.Logger, arranger.Arranger) {
 		DataConverter:  nil,
 	})
 
-	arr, err := arranger.New(factory)
+	myArranger, err := arranger.New(factory)
 	if err != nil {
 		panic(err)
 	}
 
-	return logger, arr
-}
-
-func main() {
-	var mode string
-	flag.StringVar(&mode, "m", "trigger", "Mode can be worker to start worker or trigger to rigger workflow")
-	flag.Parse()
-
-	logger, arr := boot()
-	_ = logger
-
 	switch mode {
 	case "worker":
-		err := startWorker(arr)
+		err := startWorker(myArranger)
 		if err != nil {
 			panic(err)
 		}
 	case "trigger":
-		err := triggerWorkflow(arr)
+		err := triggerWorkflow(myArranger)
 		if err != nil {
 			panic(err)
 		}
@@ -86,11 +77,7 @@ func startWorker(arranger arranger.Arranger) error {
 	if err != nil {
 		return tracer.Trace(err)
 	}
-
-	// Register workflows
-	registerWorkflowsAndActivities(w)
-
-	// Run worker
+	registerWorkflow(w)
 	return w.Run()
 }
 
@@ -105,15 +92,13 @@ func triggerWorkflow(arranger arranger.Arranger) error {
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
-	e, err := workflowClient.StartWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, "Mehran")
+	msg := Message{Msg: "Hello from printer :)"}
+	e, err := workflowClient.StartWorkflow(context.Background(), workflowOptions, PrintMessageWorkflow, msg)
 	if err != nil {
 		return tracer.Trace(err)
 	}
 
-	hlog.WithFields(gutil.MapToKeyValue(hexa.Map{
-		"WorkflowID": e.ID,
-		"RunID":      e.RunID,
-	})...).Info("Start workflow!")
-	select {}
+	hlog.WithFields("WorkflowID", e.ID, "RunID", e.RunID).Info("Start workflow!")
+
 	return nil
 }

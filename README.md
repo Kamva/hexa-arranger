@@ -2,7 +2,7 @@
 
 ### Install
 ```bash
-go get github.com/kamva/arranger
+go get github.com/kamva/hexa-arranger
 ```
 
 
