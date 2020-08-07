@@ -77,12 +77,12 @@ func main() {
 	}
 }
 
-func startWorker(arranger arranger.Arranger) error {
+func startWorker(arr arranger.Arranger) error {
 	workerOptions := worker.Options{
 		MetricsScope: tally.NoopScope,
-		Logger:       arranger.FactoryOptions().Zap,
+		Logger:       arr.FactoryOptions().Zap,
 	}
-	w, err := arranger.Worker(taskListName, workerOptions)
+	w, err := arr.Worker(taskListName, workerOptions)
 	if err != nil {
 		return tracer.Trace(err)
 	}
@@ -94,8 +94,8 @@ func startWorker(arranger arranger.Arranger) error {
 	return w.Run()
 }
 
-func triggerWorkflow(arranger arranger.Arranger) error {
-	workflowClient, err := arranger.CadenceClient()
+func triggerWorkflow(arr arranger.Arranger) error {
+	workflowClient, err := arr.CadenceClient()
 	if err != nil {
 		return tracer.Trace(err)
 	}

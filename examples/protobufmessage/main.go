@@ -48,19 +48,19 @@ func main() {
 		DataConverter:  arranger.ProtobufDataConverter,
 	})
 
-	myArranger, err := arranger.New(factory)
+	arr, err := arranger.New(factory)
 	if err != nil {
 		panic(err)
 	}
 
 	switch mode {
 	case "worker":
-		err := startWorker(myArranger)
+		err := startWorker(arr)
 		if err != nil {
 			panic(err)
 		}
 	case "trigger":
-		err := triggerWorkflow(myArranger)
+		err := triggerWorkflow(arr)
 		if err != nil {
 			panic(err)
 		}
@@ -69,13 +69,13 @@ func main() {
 	}
 }
 
-func startWorker(arranger arranger.Arranger) error {
+func startWorker(arr arranger.Arranger) error {
 	workerOptions := worker.Options{
 		MetricsScope:  tally.NoopScope,
-		Logger:        arranger.FactoryOptions().Zap,
-		DataConverter: arranger.FactoryOptions().DataConverter,
+		Logger:        arr.FactoryOptions().Zap,
+		DataConverter: arr.FactoryOptions().DataConverter,
 	}
-	w, err := arranger.Worker(taskListName, workerOptions)
+	w, err := arr.Worker(taskListName, workerOptions)
 	if err != nil {
 		return tracer.Trace(err)
 	}
@@ -83,8 +83,8 @@ func startWorker(arranger arranger.Arranger) error {
 	return w.Run()
 }
 
-func triggerWorkflow(arranger arranger.Arranger) error {
-	workflowClient, err := arranger.CadenceClient()
+func triggerWorkflow(arr arranger.Arranger) error {
+	workflowClient, err := arr.CadenceClient()
 	if err != nil {
 		return tracer.Trace(err)
 	}
