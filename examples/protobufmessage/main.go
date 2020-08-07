@@ -101,6 +101,5 @@ func triggerWorkflow(arr arranger.Arranger) error {
 	}
 
 	hlog.WithFields("WorkflowID", e.ID, "RunID", e.RunID).Info("Start workflow!")
-
 	return nil
 }

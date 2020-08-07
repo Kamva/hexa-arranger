@@ -126,6 +126,6 @@ func triggerWorkflow(arr arranger.Arranger) error {
 		"WorkflowID": e.ID,
 		"RunID":      e.RunID,
 	})...).Info("Start workflow!")
-	select {}
+
 	return nil
 }
