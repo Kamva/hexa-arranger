@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/kamva/hexa-arranger"
+	"github.com/kamva/hexa-arranger/examples/protobufmessage/hello"
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"github.com/pborman/uuid"
@@ -20,7 +21,7 @@ const (
 	serviceName  = "cadence-frontend"
 	hostAddr     = "127.0.0.1:7933"
 	domain       = "arrangerlab"
-	taskListName = "arranger-msgprinter-tasklist"
+	taskListName = "arranger-protobufmessage-tasklist"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 		MetricsScope:   tally.NoopScope,
 		Zap:            logger,
 		CtxPropagators: nil,
-		DataConverter:  nil,
+		DataConverter:  arranger.ProtobufDataConverter,
 	})
 
 	myArranger, err := arranger.New(factory)
@@ -70,8 +71,9 @@ func main() {
 
 func startWorker(arranger arranger.Arranger) error {
 	workerOptions := worker.Options{
-		MetricsScope: tally.NoopScope,
-		Logger:       arranger.FactoryOptions().Zap,
+		MetricsScope:  tally.NoopScope,
+		Logger:        arranger.FactoryOptions().Zap,
+		DataConverter: arranger.FactoryOptions().DataConverter,
 	}
 	w, err := arranger.Worker(taskListName, workerOptions)
 	if err != nil {
@@ -92,8 +94,8 @@ func triggerWorkflow(arranger arranger.Arranger) error {
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
-	msg := Message{Msg: "Hello from printer :)"}
-	e, err := workflowClient.StartWorkflow(context.Background(), workflowOptions, PrintMessageWorkflow, msg)
+	msg := hello.Message{Msg: "Hello from protoub message :)"}
+	e, err := workflowClient.StartWorkflow(context.Background(), workflowOptions, PrintProtobufMessageWorkflow, msg)
 	if err != nil {
 		return tracer.Trace(err)
 	}

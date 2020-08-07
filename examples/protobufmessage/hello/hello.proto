@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package hello;
+
+// To compile run: protoc --go_out=. ./examples/protobufmessage/hello/hello.proto
+message Message {
+  string msg = 1;
+}
+
+message ActivityMessage {
+  string msg = 1;
+}
+

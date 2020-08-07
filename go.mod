@@ -3,6 +3,8 @@ module github.com/kamva/hexa-arranger
 go 1.14
 
 require (
+	github.com/gogo/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.2
 	github.com/kamva/gutil v0.0.0-20200802192905-f876666b3671
 	github.com/kamva/hexa v0.0.0-20200802195555-bef52a2e7393
 	github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655

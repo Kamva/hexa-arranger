@@ -22,6 +22,7 @@ func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 		HeartbeatTimeout:       time.Second * 20,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
+	
 	logger := workflow.GetLogger(ctx)
 
 	var result string
