@@ -1,4 +1,4 @@
-### Hexa arranger is a wrapper for Uber Cadence
+### Hexa arranger is a wrapper and helper for Uber Cadence
 
 ### Install
 ```bash
