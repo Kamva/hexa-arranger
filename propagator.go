@@ -111,8 +111,8 @@ func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workf
 }
 
 // NewHexaContextPropagator returns new instance of hexa context propagator.
-func NewHexaContextPropagator(cei hexa.ContextExporterImporter) workflow.ContextPropagator {
-	return &hexaContextPropagator{cei: cei}
+func NewHexaContextPropagator(cei hexa.ContextExporterImporter, strict bool) workflow.ContextPropagator {
+	return &hexaContextPropagator{cei: cei, strict: strict}
 }
 
 var _ workflow.ContextPropagator = &hexaContextPropagator{}

@@ -48,7 +48,7 @@ func boot() (*zap.Logger, arranger.Arranger) {
 		MetricsScope: tally.NoopScope,
 		Zap:          logger,
 		CtxPropagators: []workflow.ContextPropagator{
-			arranger.NewHexaContextPropagator(cei),
+			arranger.NewHexaContextPropagator(cei, true),
 		},
 		DataConverter: nil,
 	})
@@ -90,7 +90,7 @@ func startWorker(arr arranger.Arranger) error {
 		MetricsScope: tally.NoopScope,
 		Logger:       arr.FactoryOptions().Zap,
 		ContextPropagators: []workflow.ContextPropagator{
-			arranger.NewHexaContextPropagator(cei),
+			arranger.NewHexaContextPropagator(cei, true),
 		},
 	}
 	w, err := arr.Worker(taskListName, workerOptions)
