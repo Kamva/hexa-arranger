@@ -6,7 +6,7 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
 	github.com/kamva/gutil v0.0.0-20200807081138-daab9af8a9f1
-	github.com/kamva/hexa v0.0.0-20200816034542-f6e65f62cbe5
+	github.com/kamva/hexa v0.0.0-20200816035644-06b7866f55fb
 	github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655
 	github.com/pborman/uuid v0.0.0-20160209185913-a97ce2ca70fa
 	github.com/uber-go/tally v3.3.17+incompatible
