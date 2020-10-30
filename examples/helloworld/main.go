@@ -13,7 +13,6 @@ import (
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"time"
 )
 
@@ -27,7 +26,7 @@ const (
 
 func boot() (*zap.Logger, arranger.Arranger) {
 	cfg := zap.NewDevelopmentConfig()
-	cfg.Level.SetLevel(zapcore.InfoLevel)
+	cfg.Level.SetLevel(cfg.Level.Level())
 
 	logger, err := cfg.Build()
 	if err != nil {
