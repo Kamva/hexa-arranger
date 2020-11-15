@@ -195,6 +195,8 @@ github.com/kamva/hexa v0.0.0-20200821141735-5e137cd7cb64 h1:BZcLI6Pl56npKN2bnLYB
 github.com/kamva/hexa v0.0.0-20200821141735-5e137cd7cb64/go.mod h1:AnYhdxq4Gr49oFv/vpKplvPfdjzn+63M3WBVfLzRsl4=
 github.com/kamva/hexa v0.0.0-20201115033432-5c9e77b6bdff h1:oZMlVbQA6Llj9KS75S9tlfYUUnUiIkWalDgwZ2pEQAk=
 github.com/kamva/hexa v0.0.0-20201115033432-5c9e77b6bdff/go.mod h1:9jbgt53426o5/zI7qHVw506DlG7LnbeNtZZssLqkAZI=
+github.com/kamva/hexa v0.0.0-20201115123231-795996ab3a1a h1:sA3IQl728vJRXmisooAcYCUSwrywQ5BBoX3dHD3eNkA=
+github.com/kamva/hexa v0.0.0-20201115123231-795996ab3a1a/go.mod h1:rYNt93UZKXKAPf9ZJ2Z71zgki716w7lzpM5XQ22VC7k=
 github.com/kamva/mgm-relation v0.0.0-20200802193925-a960eb9564ab h1:ffF2dF/UGVNESkIhqowyG95IJozWycKD6OyROuq341c=
 github.com/kamva/mgm-relation v0.0.0-20200802193925-a960eb9564ab/go.mod h1:D7cPWD6YgVfVQ7Q9x0xEABbcz2tuSjYOnuMr73YVy/M=
 github.com/kamva/mgm-relation v0.0.0-20201115040639-5cb356991a32 h1:ZBEXmXL3eJ+L+ZVhYqlPiSfEq89iKDb3/DV92vGqllo=
@@ -205,6 +207,8 @@ github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655 h1:znkvBi/J3pUEBcZNTw
 github.com/kamva/tracer v0.0.0-20200802193105-6c0f308b9655/go.mod h1:6TmvuXxFe7FD95QvNyIVEt2ZPfYBk3QiKGhGt+UwFbQ=
 github.com/kamva/tracer v0.0.0-20201021233951-a5a489d058f5 h1:6LcKSbMYh39gdlaN1mZ+tcTemiwllIMghdzdTmso9C8=
 github.com/kamva/tracer v0.0.0-20201021233951-a5a489d058f5/go.mod h1:6TmvuXxFe7FD95QvNyIVEt2ZPfYBk3QiKGhGt+UwFbQ=
+github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd h1:Wa2QzkBIqaWTsWb9gVtQxijZqweUXKkakFLhXOacG5k=
+github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd/go.mod h1:6TmvuXxFe7FD95QvNyIVEt2ZPfYBk3QiKGhGt+UwFbQ=
 github.com/karrick/godirwalk v1.8.0/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=
 github.com/karrick/godirwalk v1.10.3/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=
 github.com/kataras/golog v0.0.9/go.mod h1:12HJgwBIZFNGL0EJnMRhmvGA0PQGx8VFwrZtM4CqbAk=
