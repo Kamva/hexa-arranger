@@ -26,7 +26,7 @@ const (
 	taskListName = "arranger-hexactx-tasklist"
 )
 
-var logger = hlog.NewPrinterDriver()
+var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 

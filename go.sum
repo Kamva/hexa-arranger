@@ -201,6 +201,8 @@ github.com/kamva/hexa v0.0.0-20201130111419-05820e93a322 h1:+ZmsSI/UvICbzhmAJySu
 github.com/kamva/hexa v0.0.0-20201130111419-05820e93a322/go.mod h1:DaHtv1u/9JtEdwqa0+CcD3sP87LVc3CiAxrEvLommOo=
 github.com/kamva/hexa v0.0.0-20201130114658-d62fdb8a5040 h1:dL3lUQNxUGhWAgNthCxpo+NIbIY4xKYtEtgwJbwb6tw=
 github.com/kamva/hexa v0.0.0-20201130114658-d62fdb8a5040/go.mod h1:DaHtv1u/9JtEdwqa0+CcD3sP87LVc3CiAxrEvLommOo=
+github.com/kamva/hexa v0.0.0-20201130132923-0b5fd2c248b3 h1:bBPWnfxhHUOBaGwIYubr7pE8zt/h/Rre8RLMJ8zLLEg=
+github.com/kamva/hexa v0.0.0-20201130132923-0b5fd2c248b3/go.mod h1:oDAHXGAS0XTBEs+VqoLzfJ7i46Kza098t6oB9h4yfwo=
 github.com/kamva/mgm-relation v0.0.0-20200802193925-a960eb9564ab h1:ffF2dF/UGVNESkIhqowyG95IJozWycKD6OyROuq341c=
 github.com/kamva/mgm-relation v0.0.0-20200802193925-a960eb9564ab/go.mod h1:D7cPWD6YgVfVQ7Q9x0xEABbcz2tuSjYOnuMr73YVy/M=
 github.com/kamva/mgm-relation v0.0.0-20201115040639-5cb356991a32 h1:ZBEXmXL3eJ+L+ZVhYqlPiSfEq89iKDb3/DV92vGqllo=

@@ -7,7 +7,7 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
 	github.com/kamva/gutil v0.0.0-20201107041453-68a864f6f946
-	github.com/kamva/hexa v0.0.0-20201130114658-d62fdb8a5040
+	github.com/kamva/hexa v0.0.0-20201130132923-0b5fd2c248b3
 	github.com/kamva/mgm-relation v0.0.0-20201115040639-5cb356991a32 // indirect
 	github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd
 	github.com/pborman/uuid v0.0.0-20160209185913-a97ce2ca70fa
