@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	"github.com/kamva/hexa-arranger"
 	"github.com/kamva/hexa/db/mgmadapter"
@@ -122,10 +121,10 @@ func triggerWorkflow(arr arranger.Arranger) error {
 		return tracer.Trace(err)
 	}
 
-	hlog.WithFields(gutil.MapToKeyValue(hexa.Map{
-		"WorkflowID": e.ID,
-		"RunID":      e.RunID,
-	})...).Info("Start workflow!")
+	hlog.With(
+		hlog.String("WorkflowID", e.ID),
+		hlog.String("RunID", e.RunID),
+	).Info("Start workflow!")
 
 	return nil
 }

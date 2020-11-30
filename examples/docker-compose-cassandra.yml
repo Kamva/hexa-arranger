@@ -1,12 +1,10 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:12
-    environment:
-      POSTGRES_USER: cadence
-      POSTGRES_PASSWORD: cadence
+  cassandra:
+    image: cassandra:3.11
     ports:
-      - "5432:5432"
+      - "9042:9042"
+#  To remove graphite data, run this command in statsd container: /opt/graphite/storage/whisper # rm -r *
   statsd:
     image: graphiteapp/graphite-statsd
     ports:
@@ -24,15 +22,12 @@ services:
       - "7935:7935"
       - "7939:7939"
     environment:
-      - "DB=postgres"
-      - "DB_PORT=5432"
-      - "POSTGRES_USER=cadence"
-      - "POSTGRES_PWD=cadence"
-      - "POSTGRES_SEEDS=postgres"
+      - "CASSANDRA_SEEDS=cassandra"
       - "STATSD_ENDPOINT=statsd:8125"
       - "DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml"
     depends_on:
-      - postgres
+      - cassandra
+      - statsd
   cadence-web:
     image: ubercadence/web:latest
     environment:

@@ -124,12 +124,12 @@ func (f *factory) setup() error {
 	ch, err := tchannel.NewChannelTransport(
 		tchannel.ServiceName(o.ClientName))
 	if err != nil {
-		hlog.WithFields("err", tracer.Trace(err)).Error("Failed to create transport channel")
+		hlog.With(hlog.Err(err)).Error("Failed to create transport channel")
 		return tracer.Trace(err)
 	}
 
-	hlog.WithFields("ServiceName", o.ServiceName, "HostPort", o.HostAddr).
-		Debug("Creating RPC dispatcher outbound")
+	hlog.Debug("Creating RPC dispatcher outbound using yarpc for arranger",
+		hlog.String("ServiceName", o.ServiceName), hlog.String("HostPort", o.HostAddr))
 
 	f.dispatcher = yarpc.NewDispatcher(yarpc.Config{
 		Name: f.o.ClientName,
@@ -140,7 +140,7 @@ func (f *factory) setup() error {
 
 	if f.dispatcher != nil {
 		if err := f.dispatcher.Start(); err != nil {
-			hlog.WithFields("err", tracer.Trace(err)).Error("Failed to create outbound transport channel")
+			hlog.With().Error("Failed to create outbound transport channel")
 		}
 	}
 
