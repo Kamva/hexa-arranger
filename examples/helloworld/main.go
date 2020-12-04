@@ -3,51 +3,31 @@ package main
 import (
 	"context"
 	"flag"
+	"time"
+
+	"github.com/kamva/gutil"
 	"github.com/kamva/hexa-arranger"
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"github.com/pborman/uuid"
-	"github.com/uber-go/tally"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/worker"
-	"go.uber.org/zap"
-	"time"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 )
 
 const (
-	clientName   = "arranger-helloworld"
-	serviceName  = "cadence-frontend"
-	hostAddr     = "127.0.0.1:7933"
-	domain       = "arrangerlab"
-	taskListName = "arranger-helloworld-tasklist"
+	hostPort      = "localhost:7233"
+	namespace     = "arrangerlab"
+	taskQueueName = "arranger-helloworld-tasklist"
 )
 
-func boot() (*zap.Logger, arranger.Arranger) {
-	cfg := zap.NewDevelopmentConfig()
-	cfg.Level.SetLevel(cfg.Level.Level())
-
-	logger, err := cfg.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	factory := arranger.NewFactory(arranger.FactoryOptions{
-		ClientName:     clientName,
-		ServiceName:    serviceName,
-		HostAddr:       hostAddr,
-		Domain:         domain,
-		MetricsScope:   tally.NoopScope,
-		Zap:            logger,
-		CtxPropagators: nil,
-		DataConverter:  nil,
+func boot() arranger.Arranger {
+	c, err := client.NewClient(client.Options{
+		HostPort:  hostPort,
+		Namespace: namespace,
+		Logger:    arranger.NewLogger(hlog.NewPrinterDriver(hlog.DebugLevel)),
 	})
-
-	arr, err := arranger.New(factory)
-	if err != nil {
-		panic(err)
-	}
-
-	return logger, arr
+	gutil.PanicErr(err)
+	return arranger.New(c)
 }
 
 func main() {
@@ -55,8 +35,7 @@ func main() {
 	flag.StringVar(&mode, "m", "trigger", "Mode can be worker to start worker or trigger to rigger workflow")
 	flag.Parse()
 
-	logger, arr := boot()
-	_ = logger
+	arr := boot()
 
 	switch mode {
 	case "worker":
@@ -75,41 +54,31 @@ func main() {
 }
 
 func startWorker(arr arranger.Arranger) error {
-	workerOptions := worker.Options{
-		MetricsScope: tally.NoopScope,
-		Logger:       arr.FactoryOptions().Zap,
-	}
-	w, err := arr.Worker(taskListName, workerOptions)
-	if err != nil {
-		return tracer.Trace(err)
-	}
+	w := worker.New(arr.Client(), taskQueueName, worker.Options{
+		EnableLoggingInReplay: false,
+	})
 
 	// Register workflows
 	registerWorkflowsAndActivities(w)
 
 	// Run worker
-	return w.Run()
+	return w.Run(worker.InterruptCh())
 }
 
 func triggerWorkflow(arr arranger.Arranger) error {
-	workflowClient, err := arr.CadenceClient()
-	if err != nil {
-		return tracer.Trace(err)
-	}
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "helloworld_" + uuid.New(),
-		TaskList:                        taskListName,
-		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
+		ID:                 "helloworld_" + uuid.New(),
+		TaskQueue:          taskQueueName,
+		WorkflowRunTimeout: 20 * time.Minute,
 	}
-	e, err := workflowClient.StartWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, "Mehran")
+	e, err := arr.ExecuteWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, "Mehran")
 	if err != nil {
 		return tracer.Trace(err)
 	}
 
 	hlog.Info("Start workflow!",
-		hlog.String("WorkflowID", e.ID),
-		hlog.String("RunID", e.RunID),
+		hlog.String("WorkflowID", e.GetID()),
+		hlog.String("RunID", e.GetRunID()),
 	)
 
 	return nil

@@ -7,7 +7,5 @@ go get github.com/kamva/hexa-arranger
 
 
 #### TODO
-- [ ] Support protobuf message v2 in implemented protobuf encoder.
-- [ ] Provide OpenTracing through context propagation.
+- [ ] Provide OpenTracing.
 - [ ] Write tests.
-- [ ] Write ci.

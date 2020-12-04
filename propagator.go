@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/kamva/hexa"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/api/common/v1"
+	"go.temporal.io/sdk/workflow"
 )
 
 // hexaCtxKey is the which we use set exported hexa context
@@ -36,15 +38,16 @@ func (h *hexaContextPropagator) Inject(ctx context.Context, hw workflow.HeaderWr
 	if err != nil {
 		return err
 	}
-	hw.Set(hexaCtxKey, b)
+	hw.Set(hexaCtxKey, payload(b))
 	return nil
 }
 
 func (h *hexaContextPropagator) Extract(ctx context.Context, hr workflow.HeaderReader) (context.Context, error) {
 	var b []byte
-	err := hr.ForEachKey(func(key string, bytes []byte) error {
+	err := hr.ForEachKey(func(key string, p *common.Payload) error {
+		data := p.Data
 		if key == hexaCtxKey {
-			b = bytes
+			b = data
 		}
 		return nil
 	})
@@ -81,15 +84,16 @@ func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw work
 	if err != nil {
 		return err
 	}
-	hw.Set(hexaCtxKey, b)
+	hw.Set(hexaCtxKey, payload(b))
 	return nil
 }
 
 func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workflow.HeaderReader) (workflow.Context, error) {
 	var b []byte
-	err := hr.ForEachKey(func(key string, bytes []byte) error {
+	err := hr.ForEachKey(func(key string, p *common.Payload) error {
+		data := p.Data
 		if key == hexaCtxKey {
-			b = bytes
+			b = data
 		}
 		return nil
 	})
@@ -113,6 +117,10 @@ func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workf
 // NewHexaContextPropagator returns new instance of hexa context propagator.
 func NewHexaContextPropagator(cei hexa.ContextExporterImporter, strict bool) workflow.ContextPropagator {
 	return &hexaContextPropagator{cei: cei, strict: strict}
+}
+
+func payload(data []byte) *common.Payload {
+	return &common.Payload{Data: data}
 }
 
 var _ workflow.ContextPropagator = &hexaContextPropagator{}

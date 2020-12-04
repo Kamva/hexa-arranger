@@ -1,29 +1,28 @@
 package arranger
 
 import (
-	"github.com/kamva/tracer"
-	"go.uber.org/cadence/client"
+	"go.temporal.io/sdk/client"
 )
 
-type (
-	// Arranger provide cadence clients and all methods of cadence client for us.
-	Arranger interface {
-		client.Client
-		Factory
-	}
+type temporalClient client.Client
 
-	// arranger implements the Arranger interface
-	arranger struct {
-		client.Client
-		Factory
-	}
-)
+// Arranger is temporal clients wrapper
+type Arranger interface {
+	temporalClient
+	Client() client.Client
+}
 
-// New returns new instance of the Arranger
-func New(f Factory) (Arranger, error) {
-	cadenceClient, err := f.CadenceClient()
+// arranger implements the Arranger interface
+type arranger struct {
+	temporalClient
+}
+
+func (a *arranger) Client() client.Client {
+	return a.temporalClient
+}
+
+func New(c client.Client) Arranger {
 	return &arranger{
-		Client:  cadenceClient,
-		Factory: f,
-	}, tracer.Trace(err)
+		temporalClient: c,
+	}
 }

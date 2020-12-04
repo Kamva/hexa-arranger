@@ -2,8 +2,9 @@ package arranger
 
 import (
 	"context"
+
 	"github.com/kamva/hexa"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/sdk/workflow"
 )
 
 // Ctx gets hexa context and returns a go context which embed

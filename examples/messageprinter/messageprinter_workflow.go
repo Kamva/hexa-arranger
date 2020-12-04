@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/cadence/worker"
-	"go.uber.org/cadence/workflow"
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
 	"time"
 )

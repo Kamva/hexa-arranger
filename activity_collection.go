@@ -2,12 +2,13 @@ package arranger
 
 import (
 	"context"
+
 	"github.com/kamva/hexa"
 )
 
-type ActivityCollection struct {
+type Activities struct {
 }
 
-func (ac ActivityCollection) Ctx(ctx context.Context) hexa.Context {
+func (ac Activities) Ctx(ctx context.Context) hexa.Context {
 	return HexaCtx(ctx)
 }

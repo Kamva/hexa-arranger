@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"time"
+
+	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	"github.com/kamva/hexa-arranger"
 	"github.com/kamva/hexa/db/mgmadapter"
@@ -9,55 +12,32 @@ import (
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"github.com/pborman/uuid"
-	"github.com/uber-go/tally"
-	"go.uber.org/cadence/client"
-	"go.uber.org/cadence/worker"
-	"go.uber.org/cadence/workflow"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"time"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
 const (
-	clientName   = "arranger-helloworld"
-	serviceName  = "cadence-frontend"
-	hostAddr     = "127.0.0.1:7933"
-	domain       = "arrangerlab"
-	taskListName = "arranger-hexactx-tasklist"
+	hostPort      = "127.0.0.1:7233"
+	namespace     = "arrangerlab"
+	taskQueueName = "arranger-ctx-propagation"
 )
 
 var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
 var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
 
-func boot() (*zap.Logger, arranger.Arranger) {
-	cfg := zap.NewDevelopmentConfig()
-	cfg.Level.SetLevel(zapcore.InfoLevel)
-
-	logger, err := cfg.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	factory := arranger.NewFactory(arranger.FactoryOptions{
-		ClientName:   clientName,
-		ServiceName:  serviceName,
-		HostAddr:     hostAddr,
-		Domain:       domain,
-		MetricsScope: tally.NoopScope,
-		Zap:          logger,
-		CtxPropagators: []workflow.ContextPropagator{
+func boot() arranger.Arranger {
+	c, err := client.NewClient(client.Options{
+		HostPort:  hostPort,
+		Namespace: namespace,
+		Logger:    arranger.NewLogger(hlog.NewPrinterDriver(hlog.DebugLevel)),
+		ContextPropagators: []workflow.ContextPropagator{
 			arranger.NewHexaContextPropagator(cei, true),
 		},
-		DataConverter: nil,
 	})
-
-	arr, err := arranger.New(factory)
-	if err != nil {
-		panic(err)
-	}
-
-	return logger, arr
+	gutil.PanicErr(err)
+	return arranger.New(c)
 }
 
 func main() {
@@ -65,8 +45,7 @@ func main() {
 	flag.StringVar(&mode, "m", "trigger", "Mode can be worker to start worker or trigger to rigger workflow")
 	flag.Parse()
 
-	logger, arr := boot()
-	_ = logger
+	arr := boot()
 
 	switch mode {
 	case "worker":
@@ -86,44 +65,32 @@ func main() {
 
 func startWorker(arr arranger.Arranger) error {
 	workerOptions := worker.Options{
-		MetricsScope: tally.NoopScope,
-		Logger:       arr.FactoryOptions().Zap,
-		ContextPropagators: []workflow.ContextPropagator{
-			arranger.NewHexaContextPropagator(cei, true),
-		},
+		EnableLoggingInReplay: true,
 	}
-	w, err := arr.Worker(taskListName, workerOptions)
-	if err != nil {
-		return tracer.Trace(err)
-	}
+	w := worker.New(arr.Client(), taskQueueName, workerOptions)
 
 	// Register workflows
 	registerWorkflowsAndActivities(w)
 
 	// Run worker
-	return w.Run()
+	return w.Run(worker.InterruptCh())
 }
 
 func triggerWorkflow(arr arranger.Arranger) error {
-	workflowClient, err := arr.CadenceClient()
-	if err != nil {
-		return tracer.Trace(err)
-	}
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "helloworld_" + uuid.New(),
-		TaskList:                        taskListName,
-		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
+		ID:                 "helloworld_" + uuid.New(),
+		TaskQueue:          taskQueueName,
+		WorkflowRunTimeout: 20 * time.Minute,
 	}
 	ctx := hexa.NewCtx(nil, "my_correlation_id", "en", hexa.NewGuest(), logger, translator)
-	e, err := workflowClient.StartWorkflow(arranger.Ctx(ctx), workflowOptions, HelloWorldWorkflow, "Mehran")
+	e, err := arr.ExecuteWorkflow(arranger.Ctx(ctx), workflowOptions, HelloWorldWorkflow, "Mehran")
 	if err != nil {
 		return tracer.Trace(err)
 	}
 
 	hlog.With(
-		hlog.String("WorkflowID", e.ID),
-		hlog.String("RunID", e.RunID),
+		hlog.String("WorkflowID", e.GetRunID()),
+		hlog.String("RunID", e.GetRunID()),
 	).Info("Start workflow!")
 
 	return nil

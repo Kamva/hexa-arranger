@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/cadence/worker"
-	"go.uber.org/cadence/workflow"
-	"go.uber.org/zap"
 	"time"
+
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
 func registerWorkflowsAndActivities(worker worker.Worker) {
@@ -17,18 +17,18 @@ func registerWorkflowsAndActivities(worker worker.Worker) {
 // HelloWorldWorkflow is helloWorld workflow.
 func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
+		ScheduleToStartTimeout: 20 * time.Minute,
+		StartToCloseTimeout:    20 * time.Minute,
 		HeartbeatTimeout:       time.Second * 20,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	
+
 	logger := workflow.GetLogger(ctx)
 
 	var result string
 	f := workflow.ExecuteActivity(ctx, printHelloActivity, name)
 	if err := f.Get(ctx, &result); err != nil {
-		logger.Error("Error in execution of hello world activity", zap.Error(err))
+		logger.Error("Error in execution of hello world activity", "err", err)
 		return "", err
 	}
 
