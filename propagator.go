@@ -2,10 +2,12 @@ package arranger
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/kamva/hexa"
+	"github.com/kamva/tracer"
 	"go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/workflow"
 )
@@ -13,13 +15,14 @@ import (
 // hexaCtxKey is the which we use set exported hexa context
 // in cadence context propagator.
 const hexaCtxKey = "_hexa_ctx"
+const hexaKeys = "_hexa_ctx_keys"
 
 // hexaContextPropagator propagate hexa context.
 type hexaContextPropagator struct {
 	// if set strict flag to true, you must set hexa
 	// context on all calls to workflow,activity,....
 	strict bool
-	cei    hexa.ContextExporterImporter
+	p      hexa.ContextPropagator
 }
 
 func (h *hexaContextPropagator) Inject(ctx context.Context, hw workflow.HeaderWriter) error {
@@ -30,42 +33,43 @@ func (h *hexaContextPropagator) Inject(ctx context.Context, hw workflow.HeaderWr
 		}
 		return nil
 	}
-	m, err := h.cei.Export(hexaCtx.(hexa.Context))
+	m, err := h.p.Extract(hexaCtx.(hexa.Context))
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(m)
-	if err != nil {
-		return err
+	keys := make([]string, 0)
+
+	for k, v := range m {
+		hw.Set(k, payload(v))
+		keys = append(keys, k)
 	}
-	hw.Set(hexaCtxKey, payload(b))
+	hw.Set(hexaKeys, payload([]byte(strings.Join(keys, ","))))
+
 	return nil
 }
 
 func (h *hexaContextPropagator) Extract(ctx context.Context, hr workflow.HeaderReader) (context.Context, error) {
-	var b []byte
-	err := hr.ForEachKey(func(key string, p *common.Payload) error {
-		data := p.Data
-		if key == hexaCtxKey {
-			b = data
+	keysStr, ok := hr.Get(hexaKeys)
+	if !ok {
+		return nil, errors.New("can not find propagated hexa context key")
+	}
+	keys := strings.Split(string(keysStr.Data), ",")
+	m := make(map[string][]byte)
+	for _, k := range keys {
+		val, ok := hr.Get(k)
+		if !ok {
+			err := fmt.Errorf("can not find %s hexa key context while strict mode is enabled", k)
+			return nil, tracer.Trace(err)
 		}
-		return nil
-	})
+		m[k] = val.Data
+	}
+
+	var err error
+	ctx, err = h.p.Inject(m, ctx)
 	if err != nil {
-		return nil, err
+		return nil, tracer.Trace(err)
 	}
-	if b == nil {
-		if h.strict {
-			return nil, errors.New("we can not find propagated hexa context while strict mode is enabled")
-		}
-		return ctx, nil
-	}
-	var m hexa.Map
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, err
-	}
-	newCtx, err := h.cei.Import(m)
-	return context.WithValue(ctx, hexaCtxKey, newCtx), err
+	return context.WithValue(ctx, hexaCtxKey, hexa.MustNewContextFromRawContext(ctx)), nil
 }
 
 func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw workflow.HeaderWriter) error {
@@ -76,47 +80,49 @@ func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw work
 		}
 		return nil
 	}
-	m, err := h.cei.Export(hexaCtx.(hexa.Context))
+	m, err := h.p.Extract(hexaCtx.(hexa.Context))
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(m)
-	if err != nil {
-		return err
+
+	// we should also keep the map's keys
+	keys := make([]string, 0)
+	for k, v := range m {
+		hw.Set(k, payload(v))
+		keys = append(keys, k)
 	}
-	hw.Set(hexaCtxKey, payload(b))
+	hw.Set(hexaKeys, payload([]byte(strings.Join(keys, ","))))
+
 	return nil
 }
 
 func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workflow.HeaderReader) (workflow.Context, error) {
-	var b []byte
-	err := hr.ForEachKey(func(key string, p *common.Payload) error {
-		data := p.Data
-		if key == hexaCtxKey {
-			b = data
+	keysStr, ok := hr.Get(hexaKeys)
+	if !ok {
+		return nil, errors.New("can not find propagated hexa context key")
+	}
+	keys := strings.Split(string(keysStr.Data), ",")
+
+	m := make(map[string][]byte)
+	for _, k := range keys {
+		val, ok := hr.Get(k)
+		if !ok {
+			err := fmt.Errorf("can not find %s hexa key context while strict mode is enabled", k)
+			return nil, tracer.Trace(err)
 		}
-		return nil
-	})
+		m[k] = val.Data
+	}
+
+	hexaCtx, err := h.p.Inject(m, context.Background())
 	if err != nil {
-		return nil, err
+		return nil, tracer.Trace(err)
 	}
-	if b == nil {
-		if h.strict {
-			return nil, errors.New("we can not find propagated hexa context while strict mode is enabled")
-		}
-		return ctx, nil
-	}
-	var m hexa.Map
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, err
-	}
-	newCtx, err := h.cei.Import(m)
-	return workflow.WithValue(ctx, hexaCtxKey, newCtx), err
+	return workflow.WithValue(ctx, hexaCtxKey, hexa.MustNewContextFromRawContext(hexaCtx)), nil
 }
 
 // NewHexaContextPropagator returns new instance of hexa context propagator.
-func NewHexaContextPropagator(cei hexa.ContextExporterImporter, strict bool) workflow.ContextPropagator {
-	return &hexaContextPropagator{cei: cei, strict: strict}
+func NewHexaContextPropagator(p hexa.ContextPropagator) workflow.ContextPropagator {
+	return &hexaContextPropagator{p: p}
 }
 
 func payload(data []byte) *common.Payload {

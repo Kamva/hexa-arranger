@@ -7,7 +7,6 @@ import (
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	"github.com/kamva/hexa-arranger"
-	"github.com/kamva/hexa/db/mgmadapter"
 	"github.com/kamva/hexa/hexatranslator"
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
@@ -25,7 +24,7 @@ const (
 
 var logger = hlog.NewPrinterDriver(hlog.DebugLevel)
 var translator = hexatranslator.NewEmptyDriver()
-var cei = hexa.NewCtxExporterImporter(hexa.NewUserExporterImporter(mgmadapter.EmptyID), logger, translator)
+var p = hexa.NewContextPropagator(logger, translator)
 
 func boot() arranger.Arranger {
 	c, err := client.NewClient(client.Options{
@@ -33,7 +32,7 @@ func boot() arranger.Arranger {
 		Namespace: namespace,
 		Logger:    arranger.NewLogger(hlog.NewPrinterDriver(hlog.DebugLevel)),
 		ContextPropagators: []workflow.ContextPropagator{
-			arranger.NewHexaContextPropagator(cei, true),
+			arranger.NewHexaContextPropagator(p),
 		},
 	})
 	gutil.PanicErr(err)
@@ -82,7 +81,13 @@ func triggerWorkflow(arr arranger.Arranger) error {
 		TaskQueue:          taskQueueName,
 		WorkflowRunTimeout: 20 * time.Minute,
 	}
-	ctx := hexa.NewCtx(nil, "my_correlation_id", "en", hexa.NewGuest(), logger, translator)
+	ctx := hexa.NewContext(hexa.ContextParams{
+		CorrelationId: "my_correlation_id",
+		Locale:        "en",
+		User:          hexa.NewGuest(),
+		Logger:        logger,
+		Translator:    translator,
+	})
 	e, err := arr.ExecuteWorkflow(arranger.Ctx(ctx), workflowOptions, HelloWorldWorkflow, "Mehran")
 	if err != nil {
 		return tracer.Trace(err)
@@ -91,7 +96,7 @@ func triggerWorkflow(arr arranger.Arranger) error {
 	hlog.With(
 		hlog.String("WorkflowID", e.GetRunID()),
 		hlog.String("RunID", e.GetRunID()),
-	).Info("Start workflow!")
+	).Info("Start workflow!!")
 
 	return nil
 }
