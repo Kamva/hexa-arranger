@@ -1,6 +1,6 @@
 ### How to run examples:
 - Run `docker-compose up` to start temporal service
-- rnu your example with mode "worker"
+- run your example with mode "worker"
 ```
 go run ./helloworld/... -m worker
 ```
@@ -16,8 +16,8 @@ e.g.,
 cadence --address 172.22.0.3:7233 help
 ```
 
-- If it's the first time you are running examples, so you should first register you domain using command-line.  
+- If it's the first time you are running examples, so you should first register you namespace using command-line.  
 e.g.,
 ```bash
-cadence --address 172.22.0.3:7233 --ns arrangerlab namespce register
+tctl --address 172.22.0.3:7233 --ns arrangerlab namespce register
 ```

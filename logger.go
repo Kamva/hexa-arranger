@@ -6,6 +6,7 @@ import (
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa"
 	"github.com/kamva/hexa/hlog"
+	"github.com/kamva/tracer"
 	"go.temporal.io/sdk/log"
 )
 
@@ -36,7 +37,10 @@ func keyValuesToFields(keyVals []interface{}) []hexa.LogField {
 		lastKey := fmt.Sprint(keyVals[len(keyVals)-1])
 		keyVals = append(keyVals, fmt.Sprintf("missed log value for key:%s", lastKey))
 	}
-	m, _ := gutil.KeyValuesToMap(keyVals)
+	m, err := gutil.KeyValuesToMap(keyVals...)
+	if err != nil {
+		hlog.Error("can not convert key-values to map", hlog.Err(tracer.Trace(err)))
+	}
 	return hlog.MapToFields(m)
 }
 
