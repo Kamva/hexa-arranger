@@ -175,6 +175,7 @@ github.com/juju/errors v0.0.0-20181118221551-089d3ea4e4d5/go.mod h1:W54LbzXuIE0b
 github.com/juju/loggo v0.0.0-20180524022052-584905176618/go.mod h1:vgyd7OREkbtVEN/8IXZe5Ooef3LQePvuBm9UWj6ZL8U=
 github.com/juju/testing v0.0.0-20180920084828-472a3e8b2073/go.mod h1:63prj8cnj0tU0S9OHjGJn+b1h0ZghCndfnbQolrYTwA=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q1U84EfirKl04SVQ/s7nPm1ZPhiXd34z40TNz36k=
 github.com/kamva/gutil v0.0.0-20200802192905-f876666b3671 h1:spCCndvE6oZMhGM/QQwF1d+LcfQbUeNFDzll/qC4Oxo=
 github.com/kamva/gutil v0.0.0-20200802192905-f876666b3671/go.mod h1:isEo5NPYgY0mNFbOrCbbDVTe7Cd5VujoEt1cKbG2oGg=
@@ -192,6 +193,8 @@ github.com/kamva/hexa v0.0.0-20210314215016-c61ecb4e3ed8 h1:P5wcFXQP9FH4Al5c+z3B
 github.com/kamva/hexa v0.0.0-20210314215016-c61ecb4e3ed8/go.mod h1:GM44LhccY8Gb5J+tQb0+g+v1iomJG/55j/v9gDgv8oY=
 github.com/kamva/hexa v0.0.0-20210314215130-553791ffdb0f h1:f6zrKoxrH46BKz6N7aGfDq/BUP4ZO8mdfF5Z7UhYRMo=
 github.com/kamva/hexa v0.0.0-20210314215130-553791ffdb0f/go.mod h1:GM44LhccY8Gb5J+tQb0+g+v1iomJG/55j/v9gDgv8oY=
+github.com/kamva/hexa v0.0.0-20210317010858-27beac1ca039 h1:GYhhpQIm57NYHLgL0xmjh7s1J1GS7XvTeUDW38yJTLw=
+github.com/kamva/hexa v0.0.0-20210317010858-27beac1ca039/go.mod h1:GM44LhccY8Gb5J+tQb0+g+v1iomJG/55j/v9gDgv8oY=
 github.com/kamva/mgm-relation v0.0.0-20201115040639-5cb356991a32 h1:ZBEXmXL3eJ+L+ZVhYqlPiSfEq89iKDb3/DV92vGqllo=
 github.com/kamva/mgm-relation v0.0.0-20201115040639-5cb356991a32/go.mod h1:QVaDH58cFiG5lxo0PCrmXTwoIRQ7zDXjchAiWFKbwYs=
 github.com/kamva/mgm/v3 v3.1.0 h1:WLMrXwPXXGeeqvd+xg5XnQ0o1QuPkb3e4gL2sZXCxw0=
@@ -335,6 +338,7 @@ github.com/stretchr/testify v1.5.1 h1:nOGnQDM7FYENwehXlg/kFVnos3rEvtKTjRvOWSzb6H
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
@@ -369,6 +373,8 @@ github.com/yudai/gojsondiff v1.0.0/go.mod h1:AY32+k2cwILAkW1fbgxQ5mUmMiZFgLIV+FB
 github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82/go.mod h1:lgjkn3NuSvDfVJdfcVVdX+jpBxNmX4rDAzaS45IcYoM=
 github.com/yudai/pp v2.0.1+incompatible/go.mod h1:PuxR/8QJ7cyCkFp/aUDS+JY727OFEZkTdatxwunjIkc=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
+gitlab.com/kamva/oauth2 v0.0.0-20210317081430-9b60e60e21ce h1:g4fTAOXe0uBpgHZB7EkIR8iR7o2dcjG3cAqiguVnirQ=
+gitlab.com/kamva/oauth2 v0.0.0-20210317081430-9b60e60e21ce/go.mod h1:Y2uJbZlXbfLd9meH5fuJQt5YcyT3CmlcrZoUht2FWaw=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.mongodb.org/mongo-driver v1.3.4/go.mod h1:MSWZXKOynuguX+JSvwP8i+58jYCXxbia8HS3gZBapIE=
 go.mongodb.org/mongo-driver v1.4.3 h1:moga+uhicpVshTyaqY9L23E6QqwcHRUv1sqyOsoyOO8=

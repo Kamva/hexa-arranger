@@ -15,6 +15,7 @@ import (
 // Application error to hexa error.
 const HexaErrType = "_hexa_err"
 
+
 func HexaErrFromApplicationErr(e error) error {
 	e, _ = HexaErrFromApplicationErrWithOk(e)
 	return e
@@ -58,8 +59,8 @@ func HexaToApplicationErr(e error, t hexa.Translator) error {
 		return nil
 	}
 
-	hErr, ok := hexa.AsHexaErr(e)
-	if !ok {
+	hErr := hexa.AsHexaErr(e)
+	if hErr == nil {
 		// We do not convert unknown errors because maybe
 		// its our activity returned a temporal error. e.g.,
 		// CancelError,... or even ApplicationError which
@@ -69,7 +70,7 @@ func HexaToApplicationErr(e error, t hexa.Translator) error {
 	}
 
 	details := hexaErrToErrDetails(hErr, t)
-	return temporal.NewApplicationErrorWithCause(hErr.Error(), HexaErrType, hErr.InternalError(), &details)
+	return temporal.NewApplicationErrorWithCause(hErr.Error(), HexaErrType, hErr.InternalError(), details)
 }
 
 func hexaErrToErrDetails(hErr hexa.Error, t hexa.Translator) *ErrorDetails {
@@ -101,3 +102,4 @@ func errDetailsToHexaErr(d *ErrorDetails) hexa.Error {
 
 	return hexaErr
 }
+

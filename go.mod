@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/golang/protobuf v1.4.3
 	github.com/kamva/gutil v0.0.0-20201228200354-f965254d674b
-	github.com/kamva/hexa v0.0.0-20210314215130-553791ffdb0f
+	github.com/kamva/hexa v0.0.0-20210317010858-27beac1ca039
 	github.com/kamva/tracer v0.0.0-20201115122932-ea39052d56cd
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/pborman/uuid v1.2.1
