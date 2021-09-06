@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"time"
 
@@ -81,7 +82,7 @@ func triggerWorkflow(arr arranger.Arranger) error {
 		TaskQueue:          taskQueueName,
 		WorkflowRunTimeout: 20 * time.Minute,
 	}
-	ctx := hexa.NewContext(hexa.ContextParams{
+	ctx := hexa.NewContext(context.Background(),hexa.ContextParams{
 		CorrelationId: "my_correlation_id",
 		Locale:        "en",
 		User:          hexa.NewGuest(),

@@ -1,28 +1,38 @@
 package arranger
 
 import (
+	"context"
+
+	"github.com/kamva/hexa"
 	"go.temporal.io/sdk/client"
 )
 
-type temporalClient client.Client
+type tmpcli client.Client
 
 // Arranger is temporal clients wrapper
 type Arranger interface {
-	temporalClient
+	tmpcli
 	Client() client.Client
 }
 
 // arranger implements the Arranger interface
 type arranger struct {
-	temporalClient
+	tmpcli
 }
 
 func (a *arranger) Client() client.Client {
-	return a.temporalClient
+	return a.tmpcli
+}
+
+func (a *arranger) Shutdown(ctx context.Context) error {
+	a.tmpcli.Close()
+	return nil
 }
 
 func New(c client.Client) Arranger {
 	return &arranger{
-		temporalClient: c,
+		tmpcli: c,
 	}
 }
+
+var _ hexa.Shutdownable = &arranger{}

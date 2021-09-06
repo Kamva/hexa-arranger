@@ -5,37 +5,41 @@ import (
 	"flag"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/kamva/gutil"
 	"github.com/kamva/hexa-arranger"
 	"github.com/kamva/hexa/hlog"
+	"github.com/kamva/hexa/sr"
 	"github.com/kamva/tracer"
+	"github.com/pborman/uuid"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 )
 
 const (
-	hostPort      = "localhost:7233"
+	hostPort      = "127.0.0.1:7233"
 	namespace     = "arrangerlab"
-	taskQueueName = "arranger-helloworld-tasklist"
+	taskQueueName = "arranger-msgprinter"
 )
 
-func boot() arranger.Arranger {
-	c, err := client.NewClient(client.Options{
-		HostPort:  hostPort,
-		Namespace: namespace,
-		Logger:    arranger.NewLogger(hlog.NewPrinterDriver(hlog.DebugLevel)),
-	})
-	gutil.PanicErr(err)
-	return arranger.New(c)
-}
+var r = sr.New()
 
 func main() {
 	var mode string
 	flag.StringVar(&mode, "m", "trigger", "Mode can be worker to start worker or trigger to rigger workflow")
 	flag.Parse()
 
-	arr := boot()
+	c, err := client.NewClient(client.Options{
+		HostPort:  hostPort,
+		Namespace: namespace,
+		Logger:    arranger.NewLogger(hlog.NewPrinterDriver(hlog.DebugLevel)),
+	})
+	gutil.PanicErr(err)
+	arr := arranger.New(c)
+	r.Register("arranger", arr) // Register arranger in the service registry.
+
+	go sr.ShutdownBySignals(r, time.Second*30)
+	defer r.Shutdown(context.Background())
+	gutil.PanicErr(r.Boot())
 
 	switch mode {
 	case "worker":
@@ -45,9 +49,7 @@ func main() {
 		}
 	case "trigger":
 		err := triggerWorkflow(arr)
-		if err != nil {
-			panic(err)
-		}
+		gutil.PanicErr(err)
 	default:
 		panic("unknown mode, trigger mode can be either worker or trigger.")
 	}
@@ -55,31 +57,28 @@ func main() {
 
 func startWorker(arr arranger.Arranger) error {
 	w := worker.New(arr.Client(), taskQueueName, worker.Options{
-		EnableLoggingInReplay: false,
+		EnableLoggingInReplay: true,
 	})
+	hexaService := arranger.NewWorker(w)
+	r.Register("worker", hexaService) // Register worker as a service.
+	registerWorkflow(w)
 
-	// Register workflows
-	registerWorkflowsAndActivities(w)
-
-	// Run worker
-	return w.Run(worker.InterruptCh())
+	return hexaService.Run()
 }
 
 func triggerWorkflow(arr arranger.Arranger) error {
 	workflowOptions := client.StartWorkflowOptions{
-		ID:                 "helloworld_" + uuid.New().String(),
+		ID:                 "helloworld_" + uuid.New(),
 		TaskQueue:          taskQueueName,
 		WorkflowRunTimeout: 20 * time.Minute,
 	}
-	e, err := arr.ExecuteWorkflow(context.Background(), workflowOptions, HelloWorldWorkflow, "Mehran")
+	msg := Message{Msg: "Hello from printer :)"}
+	e, err := arr.ExecuteWorkflow(context.Background(), workflowOptions, PrintMessageWorkflow, msg)
 	if err != nil {
 		return tracer.Trace(err)
 	}
 
-	hlog.Info("Start workflow!",
-		hlog.String("WorkflowID", e.GetID()),
-		hlog.String("RunID", e.GetRunID()),
-	)
+	hlog.With(hlog.String("WorkflowID", e.GetID()), hlog.String("RunID", e.GetRunID())).Info("Start workflow!")
 
 	return nil
 }
