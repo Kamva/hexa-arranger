@@ -33,7 +33,7 @@ func (h *hexaContextPropagator) Inject(ctx context.Context, hw workflow.HeaderWr
 		}
 		return nil
 	}
-	m, err := h.p.Extract(hexaCtx.(hexa.Context))
+	m, err := h.p.Inject(hexaCtx.(hexa.Context))
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (h *hexaContextPropagator) Extract(ctx context.Context, hr workflow.HeaderR
 	}
 
 	var err error
-	ctx, err = h.p.Inject(m, ctx)
+	ctx, err = h.p.Extract(ctx, m)
 	if err != nil {
 		return nil, tracer.Trace(err)
 	}
@@ -80,7 +80,7 @@ func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw work
 		}
 		return nil
 	}
-	m, err := h.p.Extract(hexaCtx.(hexa.Context))
+	m, err := h.p.Inject(hexaCtx.(hexa.Context))
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workf
 		m[k] = val.Data
 	}
 
-	hexaCtx, err := h.p.Inject(m, context.Background())
+	hexaCtx, err := h.p.Extract(context.Background(), m)
 	if err != nil {
 		return nil, tracer.Trace(err)
 	}
