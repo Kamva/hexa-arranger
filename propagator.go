@@ -19,21 +19,14 @@ const hexaKeys = "_hexa_ctx_keys"
 
 // hexaContextPropagator propagate hexa context.
 type hexaContextPropagator struct {
+	p hexa.ContextPropagator
 	// if set strict flag to true, you must set hexa
 	// context on all calls to workflow,activity,....
 	strict bool
-	p      hexa.ContextPropagator
 }
 
 func (h *hexaContextPropagator) Inject(ctx context.Context, hw workflow.HeaderWriter) error {
-	hexaCtx := ctx.Value(hexaCtxKey)
-	if hexaCtx == nil {
-		if h.strict {
-			return errors.New("you must provide hexa context when strict mode is enabled")
-		}
-		return nil
-	}
-	m, err := h.p.Inject(hexaCtx.(hexa.Context))
+	m, err := h.p.Inject(ctx)
 	if err != nil {
 		return err
 	}
@@ -64,12 +57,7 @@ func (h *hexaContextPropagator) Extract(ctx context.Context, hr workflow.HeaderR
 		m[k] = val.Data
 	}
 
-	var err error
-	ctx, err = h.p.Extract(ctx, m)
-	if err != nil {
-		return nil, tracer.Trace(err)
-	}
-	return context.WithValue(ctx, hexaCtxKey, hexa.MustNewContextFromRawContext(ctx)), nil
+	return h.p.Extract(ctx, m)
 }
 
 func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw workflow.HeaderWriter) error {
@@ -80,7 +68,7 @@ func (h *hexaContextPropagator) InjectFromWorkflow(ctx workflow.Context, hw work
 		}
 		return nil
 	}
-	m, err := h.p.Inject(hexaCtx.(hexa.Context))
+	m, err := h.p.Inject(hexaCtx.(context.Context))
 	if err != nil {
 		return err
 	}
@@ -117,7 +105,7 @@ func (h *hexaContextPropagator) ExtractToWorkflow(ctx workflow.Context, hr workf
 	if err != nil {
 		return nil, tracer.Trace(err)
 	}
-	return workflow.WithValue(ctx, hexaCtxKey, hexa.MustNewContextFromRawContext(hexaCtx)), nil
+	return workflow.WithValue(ctx, hexaCtxKey, hexaCtx), nil
 }
 
 // NewHexaContextPropagator returns new instance of hexa context propagator.

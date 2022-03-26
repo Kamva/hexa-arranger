@@ -86,10 +86,10 @@ func triggerWorkflow(arr arranger.Arranger) error {
 		CorrelationId: "my_correlation_id",
 		Locale:        "en",
 		User:          hexa.NewGuest(),
-		Logger:        logger,
-		Translator:    translator,
+		BaseLogger:        logger,
+		BaseTranslator:    translator,
 	})
-	e, err := arr.ExecuteWorkflow(arranger.Ctx(ctx), workflowOptions, HelloWorldWorkflow, "Mehran")
+	e, err := arr.ExecuteWorkflow(ctx, workflowOptions, HelloWorldWorkflow, "Mehran")
 	if err != nil {
 		return tracer.Trace(err)
 	}

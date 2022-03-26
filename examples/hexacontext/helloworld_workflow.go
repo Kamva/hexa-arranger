@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"github.com/kamva/hexa"
 	arranger "github.com/kamva/hexa-arranger"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
 	"go.uber.org/zap"
-	"time"
 )
 
 func registerWorkflowsAndActivities(worker worker.Worker) {
@@ -18,7 +20,7 @@ func registerWorkflowsAndActivities(worker worker.Worker) {
 // HelloWorldWorkflow is helloWorld workflow.
 func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 	hexaCtx := arranger.HexaCtxFromCadenceCtx(ctx)
-	fmt.Printf("hexa correlation id in workflow: %s\n", hexaCtx.CorrelationID())
+	fmt.Printf("hexa correlation id in workflow: %s\n", hexa.CtxCorrelationId(hexaCtx))
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
@@ -41,8 +43,7 @@ func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 
 // printHelloActivity is the activity to print hello message.
 func printHelloActivity(ctx context.Context, name string) (string, error) {
-	hexaCtx := arranger.HexaCtx(ctx)
-	fmt.Printf("hexa correlation id in activity: %s\n", hexaCtx.CorrelationID())
+	fmt.Printf("hexa correlation id in activity: %s\n", hexa.CtxCorrelationId(ctx))
 	s := fmt.Sprintf("Hello %s", name)
 	fmt.Println(s)
 

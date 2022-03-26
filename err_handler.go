@@ -1,10 +1,13 @@
 package arranger
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
 	"github.com/kamva/hexa"
+	"github.com/kamva/hexa/hexatranslator"
+	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"go.temporal.io/sdk/workflow"
 )
@@ -13,8 +16,8 @@ import (
 // and need to wrap it before reporting.
 var UnknownHexaErr = hexa.NewError(http.StatusInternalServerError, "lib.unknown_hexa_error", nil)
 
-func HandleErrWithCtx(ctx hexa.Context, err error) error {
-	return HandleErr(err, ctx.Logger(), ctx.Translator())
+func HandleErrWithCtx(ctx context.Context, err error) error {
+	return HandleErr(err, hlog.CtxLogger(ctx), hexatranslator.CtxTranslator(ctx))
 }
 
 func HandleErr(err error, l hexa.Logger, t hexa.Translator) error {
