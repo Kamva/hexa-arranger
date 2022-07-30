@@ -128,7 +128,7 @@ func file_error_proto_rawDescGZIP() []byte {
 }
 
 var file_error_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_error_proto_goTypes = []interface{}{
+var file_error_proto_goTypes = []any{
 	(*ErrorDetails)(nil), // 0: arranger.ErrorDetails
 }
 var file_error_proto_depIdxs = []int32{
@@ -145,7 +145,7 @@ func file_error_proto_init() {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_error_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_error_proto_msgTypes[0].Exporter = func(v any, i int) any {
 			switch v := v.(*ErrorDetails); i {
 			case 0:
 				return &v.state

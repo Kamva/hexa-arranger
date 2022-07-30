@@ -20,4 +20,6 @@ cadence --address 172.22.0.3:7233 help
 e.g.,
 ```bash
 tctl --address 172.22.0.3:7233 --ns arrangerlab namespce register
+# or
+tctl --address host.docker.internal:7233 --ns arrangerlab namespce register
 ```

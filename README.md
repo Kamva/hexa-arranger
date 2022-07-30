@@ -10,15 +10,13 @@ go get github.com/kamva/hexa-arranger
 - Read [the docs](https://github.com/temporalio/sdk-go/blob/master/temporal/error.go) about error types in temporal.
 
 - solution to handle errors:  
-    temporal don't have interceptor for activities yet.
+    temporal doesn't have interceptor for activities yet.
     For workflows but it has, maybe we use it later.
-    For now should report and convert errors when return 
+    It should report and convert errors when return 
     error from either activity or workflow.
     I think a simple decorator for each workflow
     and activity can be a good idea. when temporal
-    implemented interceptor for activities, we 
-    can use the workflow and activity interceptors
-    to implement it without the decorator.
+    implemented interceptor, so we can replace it with an interceptor.
 
 - note: if you got error from activity in your workflow and want to return it, do not use `tracer.Trace` as wrapper of that error, because if error is temporal error, and we wrap it using another error, so temporal worker will get custom error and try to convert it to ApplicationError, so original activity error will
  wrap by another ApplicationError and if first called activity converted hexa error to ApplicationError, we will 

@@ -15,7 +15,7 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-var SampleHexaErr = hexa.NewError(http.StatusInternalServerError, "arranger.examples.fake_internal_err", nil)
+var SampleHexaErr = hexa.NewError(http.StatusInternalServerError, "arranger.examples.fake_internal_err")
 
 func registerWorkflow(worker worker.Worker, h Handlers) {
 	worker.RegisterWorkflow(h.PrintMessageWorkflow)

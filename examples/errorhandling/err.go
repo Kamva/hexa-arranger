@@ -11,7 +11,7 @@ type ExampleErrorType struct {
 	Name string `json:"name"`
 }
 
-var SampleHexaErr = hexa.NewError(http.StatusUnprocessableEntity, "arranger.examples.err", nil)
+var SampleHexaErr = hexa.NewError(http.StatusUnprocessableEntity, "arranger.examples.err")
 
 func (e ExampleErrorType) Error() string {
 	return fmt.Sprint("err_msg-> with name: ", e.Name)

@@ -14,7 +14,7 @@ import (
 
 // UnknownHexaErr is an error to use when we get unknown error from activity or workflow
 // and need to wrap it before reporting.
-var UnknownHexaErr = hexa.NewError(http.StatusInternalServerError, "lib.unknown_hexa_error", nil)
+var UnknownHexaErr = hexa.NewError(http.StatusInternalServerError, "lib.unknown_hexa_error")
 
 func HandleErrWithCtx(ctx context.Context, err error) error {
 	return HandleErr(err, hlog.CtxLogger(ctx), hexatranslator.CtxTranslator(ctx))

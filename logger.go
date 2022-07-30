@@ -15,24 +15,24 @@ type logger struct {
 	logger hexa.Logger
 }
 
-func (l *logger) Debug(msg string, keyvals ...interface{}) {
+func (l *logger) Debug(msg string, keyvals ...any) {
 	l.logger.Debug(msg, keyValuesToFields(keyvals)...)
 }
 
-func (l *logger) Info(msg string, keyvals ...interface{}) {
+func (l *logger) Info(msg string, keyvals ...any) {
 	l.logger.Info(msg, keyValuesToFields(keyvals)...)
 }
 
-func (l *logger) Warn(msg string, keyvals ...interface{}) {
+func (l *logger) Warn(msg string, keyvals ...any) {
 	l.logger.Warn(msg, keyValuesToFields(keyvals)...)
 
 }
 
-func (l *logger) Error(msg string, keyvals ...interface{}) {
+func (l *logger) Error(msg string, keyvals ...any) {
 	l.logger.Error(msg, keyValuesToFields(keyvals)...)
 }
 
-func keyValuesToFields(keyVals []interface{}) []hexa.LogField {
+func keyValuesToFields(keyVals []any) []hexa.LogField {
 	if len(keyVals)%2 != 0 {
 		lastKey := fmt.Sprint(keyVals[len(keyVals)-1])
 		keyVals = append(keyVals, fmt.Sprintf("missed log value for key:%s", lastKey))

@@ -15,7 +15,6 @@ import (
 // Application error to hexa error.
 const HexaErrType = "_hexa_err"
 
-
 func HexaErrFromApplicationErr(e error) error {
 	e, _ = HexaErrFromApplicationErrWithOk(e)
 	return e
@@ -91,7 +90,7 @@ func hexaErrToErrDetails(hErr hexa.Error, t hexa.Translator) *ErrorDetails {
 }
 
 func errDetailsToHexaErr(d *ErrorDetails) hexa.Error {
-	m := make(map[string]interface{})
+	m := make(map[string]any)
 	if err := gutil.Unmarshal(d.Data, &m); err != nil {
 		errMsg := "can not unmarshal error data"
 		hlog.Error(errMsg, hlog.Err(tracer.Trace(err)))
