@@ -17,10 +17,10 @@ import (
 var UnknownHexaErr = hexa.NewError(http.StatusInternalServerError, "lib.unknown_hexa_error")
 
 func HandleErrWithCtx(ctx context.Context, err error) error {
-	return HandleErr(err, hlog.CtxLogger(ctx), hexatranslator.CtxTranslator(ctx))
+	return HandleErr(err, hexa.Logger(ctx), hexatranslator.CtxTranslator(ctx))
 }
 
-func HandleErr(err error, l hexa.Logger, t hexa.Translator) error {
+func HandleErr(err error, l hlog.Logger, t hexa.Translator) error {
 	ReportErr(l, err)
 	return HexaToApplicationErr(err, t)
 }
@@ -38,7 +38,7 @@ func HandleErr(err error, l hexa.Logger, t hexa.Translator) error {
 // TODO: we can also extend reporter to report ApplicationErrors which
 // are not hexa error(e.g., CancelActivity,...) properly and in a good
 // format.
-func ReportErr(l hexa.Logger, e error) {
+func ReportErr(l hlog.Logger, e error) {
 	var continueAsNew *workflow.ContinueAsNewError
 	// We don't need to report nil or continueAsNew errors.
 	if e == nil || errors.As(e, &continueAsNew) {

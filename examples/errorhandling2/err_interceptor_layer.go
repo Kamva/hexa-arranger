@@ -5,20 +5,21 @@ import (
 
 	"github.com/kamva/hexa"
 	arranger "github.com/kamva/hexa-arranger"
+	"github.com/kamva/hexa/hlog"
 	"go.temporal.io/sdk/workflow"
 )
 
 type errInterceptor struct {
 	h Handlers
-	l hexa.Logger
+	l hlog.Logger
 	t hexa.Translator
 }
 
-func NewErrInterceptorLayer(h Handlers, l hexa.Logger, t hexa.Translator) Handlers {
+func NewErrInterceptorLayer(h Handlers, l hlog.Logger, t hexa.Translator) Handlers {
 	return &errInterceptor{
 		h: h,
-		l:l,
-		t:t,
+		l: l,
+		t: t,
 	}
 }
 

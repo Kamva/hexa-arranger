@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/kamva/gutil"
-	"github.com/kamva/hexa"
 	"github.com/kamva/hexa/hlog"
 	"github.com/kamva/tracer"
 	"go.temporal.io/sdk/log"
@@ -12,7 +11,7 @@ import (
 
 // logger implements temporal logger using hexa logger.
 type logger struct {
-	logger hexa.Logger
+	logger hlog.Logger
 }
 
 func (l *logger) Debug(msg string, keyvals ...any) {
@@ -32,7 +31,7 @@ func (l *logger) Error(msg string, keyvals ...any) {
 	l.logger.Error(msg, keyValuesToFields(keyvals)...)
 }
 
-func keyValuesToFields(keyVals []any) []hexa.LogField {
+func keyValuesToFields(keyVals []any) []hlog.Field {
 	if len(keyVals)%2 != 0 {
 		lastKey := fmt.Sprint(keyVals[len(keyVals)-1])
 		keyVals = append(keyVals, fmt.Sprintf("missed log value for key:%s", lastKey))
@@ -44,7 +43,7 @@ func keyValuesToFields(keyVals []any) []hexa.LogField {
 	return hlog.MapToFields(m)
 }
 
-func NewLogger(l hexa.Logger) log.Logger {
+func NewLogger(l hlog.Logger) log.Logger {
 	return &logger{logger: l}
 }
 
